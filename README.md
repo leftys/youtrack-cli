@@ -1,6 +1,9 @@
 # Youtrack CLI
 
-Command line interface for Youtrack designed to suit [Quantlane](http://quantlane.com/) workflow.
+Command line interface for Youtrack designed to suit [Quantlane](http://quantlane.com/) workflow. 
+Written for Python 2 because of official `youtrack` library incompatible with Python 3. This code is Python 3 compatible
+though.
+
 
 # Set-up
 
@@ -22,7 +25,7 @@ PROJ-120 Task 2 summary
 ```
 
 ```bash
-$ yt issue -p RES -s 'Test task' -a some.assignee -r some.reviewer -u 'Some subproject' -t 'Short term' -m MILE-123
+$ yt issue RES 'Test task' -a some.assignee -r some.reviewer -u 'Some subproject' -t 'Short term' -m MILE-123
 $ yt review RES-123
 $ yt done RES-123
 $ yt command RES-123 'Any YouTrack command' 
