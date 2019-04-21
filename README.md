@@ -5,7 +5,7 @@ Written for Python 2 because of official `youtrack` library incompatible with Py
 though.
 
 
-# Set-up
+## Set-up
 
 ```bash
 pip install ssh+https://github.com/leftys/youtrack-cli.git
