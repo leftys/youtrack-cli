@@ -8,7 +8,7 @@ though.
 ## Set-up
 
 ```bash
-pip install ssh+https://github.com/leftys/youtrack-cli.git
+pip install git+https://github.com/leftys/youtrack-cli.git
 echo "export YOUTRACK_API_URL='https://youtrack.int.quantlane.com/'" >> ~/.profile
 echo "export YOUTRACK_AUTH_TOKEN='...'" >> ~/.profile
 ```
