@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+import youtrack.connection
+import click
+import pprint
+import os
+import sys
+
+
+try:
+	YOUTRACK_API_URL = os.environ['YOUTRACK_API_URL']
+	YOUTRACK_AUTH_TOKEN = os.environ['YOUTRACK_AUTH_TOKEN']
+except KeyError:
+	click.echo(
+		'Please define YOUTRACK_API_URL (youtrack domain with https is fine) and YOUTRACK_AUTH_TOKEN.'
+		''
+	)
+	sys.exit(1)
+
+
+@click.group()
+def yt():
+	pass
+
+
+@yt.command('issue')
+@click.option('-p', '--project', required = True)
+@click.option('-s', '--summary', required = True)
+@click.option('-a', '--assignee')
+@click.option('-r', '--reviewer')
+@click.option('-u', '--subproject')
+@click.option('-t', '--stage')
+@click.option('--description', default = '')
+@click.option('--priority', default = 'Normal')
+def issue(project, summary, assignee, reviewer, subproject, stage, description, priority):
+	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
+	ret = api.createIssue(
+		project = project,
+		assignee = assignee,
+		summary = summary,
+		description = description,
+		priority = priority,
+	)
+	try:
+		issue_id = ret[0]['location'].split('/')[-1]
+	except (KeyError, IndexError):
+		click.echo('Unable to get issue id from YouTrack response: ' + ret)
+		return
+	set_custom_field(api, issue_id, 'Reviewer', reviewer)
+	set_custom_field(api, issue_id, 'Subproject', subproject)
+	set_custom_field(api, issue_id, 'Stage', stage)
+	click.echo('Created issue ', issue_id)
+
+
+def set_custom_field(api, issue_id, field_name, field_value):
+	if field_value:
+		res = api.executeCommand(issue_id, field_name + ' ' + field_value)
+		assert res == 'Command executed'
+
+
+@yt.command('show')
+@click.argument('issue-id')
+def show(issue_id):
+	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
+	pprint.pprint(api.getIssue(issue_id))
+
+
+@yt.command('reviewed')
+@click.argument('issue-id')
+def reviewed(issue_id):
+	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
+	issue = api.getIssue(issue_id)
+	api.executeCommand(issue_id, 'Stage To Do Now')
+	click.echo('ToDo <- ' + issue['summary'])\
+
+
+@yt.command('done')
+@click.argument('issue-id')
+def done(issue_id):
+	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
+	issue = api.getIssue(issue_id)
+	api.executeCommand(issue_id, 'Stage Done, Needs review')
+	click.echo('Done, Needs review <- ' + issue['summary'])
+
+
+@yt.command('command')
+@click.argument('issue-id')
+@click.argument('command')
+def done(issue_id, command):
+	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
+	issue = api.getIssue(issue_id)
+	try:
+		api.executeCommand(issue_id, command)
+	except youtrack.YouTrackException as ex:
+		click.echo(ex.message)
+	else:
+		click.echo('Executed on issue ' + issue['summary'])
+
+
+@yt.command('last')
+def last():
+	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
+	for issue in api.getAllIssues(max = 10, filter = 'sort by: {Updated} desc'):
+		click.echo('{:10s} {}'.format(issue.id, issue.summary))
+
+
+
+if __name__ == '__main__':
+	yt()
