@@ -29,9 +29,10 @@ def yt():
 @click.option('-r', '--reviewer')
 @click.option('-u', '--subproject')
 @click.option('-t', '--stage')
+@click.option('-m', '--milestone')
 @click.option('--description', default = '')
 @click.option('--priority', default = 'Normal')
-def issue(project, summary, assignee, reviewer, subproject, stage, description, priority):
+def issue(project, summary, assignee, reviewer, subproject, stage, milestone, description, priority):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
 	ret = api.createIssue(
 		project = project,
@@ -48,7 +49,8 @@ def issue(project, summary, assignee, reviewer, subproject, stage, description, 
 	set_custom_field(api, issue_id, 'Reviewer', reviewer)
 	set_custom_field(api, issue_id, 'Subproject', subproject)
 	set_custom_field(api, issue_id, 'Stage', stage)
-	click.echo('Created issue ', issue_id)
+	set_custom_field(api, issue_id, 'Subtask of', milestone)
+	click.echo('Created issue ' + issue_id)
 
 
 def set_custom_field(api, issue_id, field_name, field_value):
@@ -85,7 +87,7 @@ def done(issue_id):
 @yt.command('command')
 @click.argument('issue-id')
 @click.argument('command')
-def done(issue_id, command):
+def command(issue_id, command):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
 	issue = api.getIssue(issue_id)
 	try:
@@ -97,9 +99,19 @@ def done(issue_id, command):
 
 
 @yt.command('last')
-def last():
+@click.option('-p', '--project')
+@click.option('-m', '--mine', is_flag = True)
+@click.option('-l', '--last', default = 10)
+def last(project, mine, last):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
-	for issue in api.getAllIssues(max = 10, filter = 'sort by: {Updated} desc'):
+	filter_string = 'Sort by: {Updated} desc'
+	if project:
+		filter_string += ' AND Project: ' + project
+	if mine:
+		filter_string += ' AND (Assignee: me OR Reviewer: me)'
+	click.echo('Filtering with: ' + filter_string)
+	click.echo()
+	for issue in api.getAllIssues(max = last, filter = filter_string):
 		click.echo('{:10s} {}'.format(issue.id, issue.summary))
 
 
