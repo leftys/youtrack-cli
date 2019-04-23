@@ -9,8 +9,8 @@ though.
 
 ```bash
 pip install git+https://github.com/leftys/youtrack-cli.git
-echo "export YOUTRACK_API_URL='https://youtrack.int.quantlane.com/'" >> ~/.profile
-echo "export YOUTRACK_AUTH_TOKEN='...'" >> ~/.profile
+echo "export YOUTRACK_API_URL='https://your-youtrack-domain.com/'" >> ~/.profile
+echo "export YOUTRACK_AUTH_TOKEN='get-this-in-your-youtrack-profile'" >> ~/.profile
 ```
 
 
