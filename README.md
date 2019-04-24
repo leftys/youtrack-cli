@@ -28,6 +28,8 @@ PROJ-120 Task 2 summary
 $ yt issue RES 'Test task' -a some.assignee -r some.reviewer -u 'Some subproject' -t 'Short term' -m MILE-123
 $ yt done RES-123
 $ yt reviewed RES-123
+$ yt show RES-123
+$ yt browse RES-123
 $ yt command RES-123 'Any YouTrack command' 
 ```
 

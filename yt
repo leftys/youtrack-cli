@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import youtrack.connection
 import click
+import datetime
 import pprint
 import os
 import sys
@@ -63,7 +64,22 @@ def set_custom_field(api, issue_id, field_name, field_value):
 @click.argument('issue-id')
 def show(issue_id):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
-	pprint.pprint(api.getIssue(issue_id))
+	issue = api.getIssue(issue_id)
+	click.echo('{:10s} {}'.format(issue.id, issue.summary))
+	click.echo()
+	click.echo(issue.description)
+	click.echo()
+	click.echo('Stage      ' + issue.Stage)
+	click.echo('Assignee   ' + issue.Assignee)
+	click.echo('Subproject ' + issue.Subproject)
+	click.echo('Priority   ' + issue.Priority)
+	click.echo('Due date   ' + str(datetime.datetime.fromtimestamp(int(issue['Due Date']) // 1000)))
+
+
+@yt.command('browse')
+@click.argument('issue-id')
+def browse(issue_id):
+	os.system('xdg-open \'' + YOUTRACK_API_URL + 'issue/' + issue_id + '\'') 
 
 
 @yt.command('reviewed')
@@ -101,18 +117,21 @@ def command(issue_id, command):
 @yt.command('last')
 @click.option('-p', '--project')
 @click.option('-m', '--mine', is_flag = True)
+@click.option('-o', '--open', is_flag = True)
 @click.option('-l', '--last', default = 10, help = 'How many issues to print')
-def last(project, mine, last):
+def last(project, mine, open, last):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
 	filter_string = 'Sort by: {Updated} desc'
 	if project:
 		filter_string += ' AND Project: ' + project
 	if mine:
 		filter_string += ' AND (Assignee: me OR Reviewer: me)'
+	if open:
+		filter_string += ' AND Stage: -Archived AND Stage: -Resolved'
 	click.echo('Filtering with: ' + filter_string)
 	click.echo()
 	for issue in api.getAllIssues(max = last, filter = filter_string):
-		click.echo('{:10s} {}'.format(issue.id, issue.summary))
+		click.echo('{:10s} {:8s}  {:70s}'.format(issue.id, issue.Stage[:8], issue.summary))
 
 
 
