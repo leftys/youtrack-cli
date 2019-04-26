@@ -73,7 +73,11 @@ def show(issue_id):
 	click.echo('Assignee   ' + issue.Assignee)
 	click.echo('Subproject ' + issue.Subproject)
 	click.echo('Priority   ' + issue.Priority)
-	click.echo('Due date   ' + str(datetime.datetime.fromtimestamp(int(issue['Due Date']) // 1000)))
+	if 'Due Date' in issue:
+		due_date = str(datetime.datetime.fromtimestamp(int(issue['Due Date']) // 1000))
+	else:
+		due_date = '-'
+	click.echo('Due date   ' + due_date)
 
 
 @yt.command('browse')
