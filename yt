@@ -66,8 +66,9 @@ def show(issue_id):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
 	issue = api.getIssue(issue_id)
 	click.echo('{:10s} {}'.format(issue.id, issue.summary))
-	click.echo()
-	click.echo(issue.description)
+	if 'description' in issue:	
+		click.echo()
+		click.echo(issue.description)
 	click.echo()
 	click.echo('Stage      ' + issue.Stage)
 	click.echo('Assignee   ' + issue.Assignee)
