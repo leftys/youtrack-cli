@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name='youtrack-cli',
-    version='1.0',
+    version='1.1',
     author='Jan Skoda',
     author_email='skoda@jskoda.cz',
     scripts=['yt'],
