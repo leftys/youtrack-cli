@@ -31,6 +31,11 @@ $ yt reviewed RES-123
 $ yt show RES-123
 $ yt browse RES-123
 $ yt command RES-123 'Any YouTrack command' 
+$ yt --help
 ```
 
 Usage together with bash aliases for filling usual projects/assignees/... is recommended!
+
+```bash
+echo "alias ytabc='yt issues ABC -a my.username -r reviewer ...'" >> ~/.profile
+```
