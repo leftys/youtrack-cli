@@ -7,7 +7,7 @@ Written for Python 2 because of official `youtrack` library incompatible with Py
 ## Set-up
 
 ```bash
-pip install git+https://github.com/leftys/youtrack-cli.git
+pip2 install git+https://github.com/leftys/youtrack-cli.git
 echo "export YOUTRACK_API_URL='https://your-youtrack-domain.com/'" >> ~/.profile
 echo "export YOUTRACK_AUTH_TOKEN='get-this-in-your-youtrack-profile'" >> ~/.profile
 ```
