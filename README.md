@@ -24,7 +24,8 @@ PROJ-120 Task 2 summary
 ```
 
 ```bash
-$ yt issue RES 'Test task' -a some.assignee -r some.reviewer -u 'Some subproject' -t 'Short term' -m MILE-123 -b 'My Agile Board'
+$ yt issue RES 'Test task' -a some.assignee -r some.reviewer -u 'Some subproject' \
+	-t 'Short term' -m MILE-123 -b 'My Agile Board'
 $ yt done RES-123
 $ yt reviewed RES-123
 $ yt show RES-123
