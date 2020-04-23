@@ -33,9 +33,11 @@ def yt():
 @click.option('-p', '--product')
 @click.option('-t', '--stage')
 @click.option('-m', '--milestone')
-@click.option('--description', default = '')
+@click.option('-b', '--board')
+@click.option('-s', '--sprint', default = 'Current Sprint')
+@click.option('-d', '--description', default = '')
 @click.option('--priority')
-def issue(project, summary, assignee, reviewer, subproject, functional_area, product, stage, milestone, description, priority):
+def issue(project, summary, assignee, reviewer, subproject, functional_area, product, stage, milestone, board, sprint, description, priority):
 	api = youtrack.connection.Connection(YOUTRACK_API_URL, token = YOUTRACK_AUTH_TOKEN)
 	ret = api.createIssue(
 		project = project,
@@ -55,6 +57,7 @@ def issue(project, summary, assignee, reviewer, subproject, functional_area, pro
 	set_custom_field(api, issue_id, 'Product', product)
 	set_custom_field(api, issue_id, 'Stage', stage)
 	set_custom_field(api, issue_id, 'Subtask of', milestone)
+	set_custom_field(api, issue_id, 'Board', board + ' ' + sprint)
 	click.echo('Created issue ' + issue_id)
 
 
@@ -80,6 +83,8 @@ def show(issue_id):
 	click.echo('Priority   ' + issue.Priority)
 	if 'Functional Area' in issue:
 		click.echo('Func. area ' + issue['Functional Area'])
+	if 'sprint' in issue:
+		click.echo('Sprints' + str(issue['sprint']))
 	if 'Due Date' in issue:
 		due_date = str(datetime.datetime.fromtimestamp(int(issue['Due Date']) // 1000))
 	else:
